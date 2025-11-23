@@ -4,6 +4,7 @@ from datetime import datetime, UTC
 from sqlalchemy.orm import Session
 from database.models import Detection
 
+
 def test_create_detection(test_db: Session):
     """Test creating a new detection"""
     detection = Detection(
@@ -25,6 +26,7 @@ def test_create_detection(test_db: Session):
     assert detection.gps_lat == -23.8859
     assert detection.gps_lng == 31.5205
 
+
 def test_get_detection(test_db: Session):
     """Test retrieving a detection"""
     # Create a test detection
@@ -40,7 +42,8 @@ def test_get_detection(test_db: Session):
     test_db.commit()
 
     # Retrieve the detection
-    db_detection = test_db.query(Detection).filter(Detection.id == detection.id).first()
+    db_detection = test_db.query(Detection).filter(
+        Detection.id == detection.id).first()
     assert db_detection is not None
     assert db_detection.class_name == "rhino"
     assert db_detection.confidence == 0.95

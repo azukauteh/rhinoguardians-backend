@@ -38,7 +38,8 @@ class AlertStatus(str, Enum):
 class Location(BaseModel):
     lat: float = Field(..., description="Latitude of the alert location")
     lng: float = Field(..., description="Longitude of the alert location")
-    zoneLabel: str = Field(..., description="Label of the zone where alert was triggered")
+    zoneLabel: str = Field(...,
+                           description="Label of the zone where alert was triggered")
 
 
 class AlertTriggerRequest(BaseModel):
@@ -52,15 +53,15 @@ class AlertTriggerRequest(BaseModel):
 
 
 class AlertResponse(BaseModel):
-    id: str = Field(..., description="Alert ID (format: RG-XXX or DB id)")
-    detection_id: str = Field(..., description="ID of the triggering detection")
-    status: AlertStatus = Field(..., description="Current alert status")
-    type: AlertType = Field(..., description="Type of alert")
-    severity: AlertSeverity = Field(..., description="Severity level")
-    created_at: datetime = Field(..., description="Alert creation timestamp")
-    updated_at: datetime = Field(..., description="Last update timestamp")
-    location: Location = Field(..., description="Location information")
-    notes: Optional[str] = Field(None, description="Optional notes")
+    id: str
+    detection_id: int  # was str
+    status: AlertStatus
+    type: AlertType
+    severity: AlertSeverity
+    created_at: datetime
+    updated_at: datetime
+    location: Location
+    notes: Optional[str] = None
 
     class Config:
         from_attributes = True

@@ -8,21 +8,26 @@ proper error handling and input validation.
 
 import os
 import torch
+from torch import Tensor
 from PIL import Image
 from typing import List, Dict, Union
 from pathlib import Path
 
 
+# Removed stray print(torch.Tensor) debug statement
+
 # Short-circuit detector for tests or environments without YOLO dependencies
 if os.getenv("SKIP_YOLO") == "1":
     class YoloDetector:
         def __init__(self, model_path: str | None = None, *_, **__):
-            # In tests, skip heavy load but still validate invalid paths if provided
+            # In tests, skip heavy load but still validate invalid paths if
+            # provided
             if model_path and not Path(model_path).exists():
                 raise FileNotFoundError(f"Model not found: {model_path}")
             self._stub = True
 
-        def predict(self, image_path: str) -> List[Dict[str, Union[List[float], float, int]]]:
+        def predict(
+                self, image_path: str) -> List[Dict[str, Union[List[float], float, int]]]:
             # Always return empty in stub mode
             return []
 else:
@@ -69,7 +74,8 @@ else:
             except Exception as e:
                 raise RuntimeError(f"Failed to load YOLO model: {str(e)}")
 
-        def predict(self, image_path: str) -> List[Dict[str, Union[List[float], float, int]]]:
+        def predict(
+                self, image_path: str) -> List[Dict[str, Union[List[float], float, int]]]:
             """
             Perform object detection on an image.
 
@@ -107,7 +113,8 @@ else:
             try:
                 # Perform inference
                 results = self.model(img)
-                detections: List[Dict[str, Union[List[float], float, int]]] = []
+                detections: List[Dict[str,
+                                      Union[List[float], float, int]]] = []
 
                 # Convert tensor to list and process detections
                 for *box, conf, cls in results.xyxy[0].tolist():

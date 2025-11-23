@@ -22,18 +22,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def get_env_value(key: str, default: Any = None, required: bool = False) -> Any:
+def get_env_value(
+        key: str,
+        default: Any = None,
+        required: bool = False) -> Any:
     """
     Get environment variable with validation.
-    
+
     Args:
         key (str): Environment variable name
         default (Any): Default value if not set
         required (bool): Whether the variable is required
-        
+
     Returns:
         Any: The environment variable value
-        
+
     Raises:
         ValueError: If a required variable is missing
     """
@@ -45,10 +48,11 @@ def get_env_value(key: str, default: Any = None, required: bool = False) -> Any:
 
 # Database configuration
 DATABASE_URL = get_env_value(
-    'DATABASE_URL',
-    'sqlite:///./detections.db',
-    required=True
+    "DATABASE_URL",
+    "sqlite:///./detections.db",
+    required=True,
 )
+
 
 # Model configuration
 MODEL_PATH = get_env_value(

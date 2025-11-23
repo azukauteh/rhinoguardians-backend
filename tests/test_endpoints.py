@@ -9,6 +9,7 @@ from main import app
 
 client = TestClient(app)
 
+
 @pytest.fixture
 def test_image():
     """Create a test image for upload"""
@@ -17,6 +18,7 @@ def test_image():
     img.save(img_byte_arr, format='JPEG')
     img_byte_arr.seek(0)
     return img_byte_arr
+
 
 def test_upload_endpoint(test_image):
     """Test uploading an image"""
@@ -35,6 +37,7 @@ def test_upload_endpoint(test_image):
         assert "id" in detection
         assert "class_name" in detection
         assert "confidence" in detection
+
 
 def test_detections_endpoint():
     """Test retrieving detections"""

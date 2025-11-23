@@ -2,6 +2,7 @@ import json
 
 AUTH = {"Authorization": "Bearer testtoken123"}
 
+
 def test_alerts_list_empty(client):
     resp = client.get("/alerts/")
     assert resp.status_code == 200
@@ -9,6 +10,7 @@ def test_alerts_list_empty(client):
     assert "alerts" in data
     assert isinstance(data["alerts"], list)
     assert data["total"] == 0
+
 
 def test_alerts_trigger_requires_auth(client):
     payload = {
@@ -22,6 +24,7 @@ def test_alerts_trigger_requires_auth(client):
     resp = client.post("/alerts/trigger", json=payload)
     assert resp.status_code == 401
 
+
 def test_alerts_trigger_success_and_list(client):
     payload = {
         "detection_id": "det_123",
@@ -29,7 +32,10 @@ def test_alerts_trigger_success_and_list(client):
         "severity": "critical",
         "source": "camera_trap",
         "notes": "2 individuals on foot",
-        "location": {"lat": -23.8859, "lng": 31.5205, "zoneLabel": "North Sector"},
+        "location": {
+            "lat": -23.8859,
+            "lng": 31.5205,
+            "zoneLabel": "North Sector"},
         "createdBy": "Operator 1",
     }
     # Create alert
@@ -40,7 +46,14 @@ def test_alerts_trigger_success_and_list(client):
     assert body["detection_id"] == "det_123"
     assert body["type"] == "poacher_suspected"
     assert body["severity"] == "critical"
-    assert body["status"] in ("sent", "failed", "created", "acknowledged", "in_progress", "resolved", "expired")
+    assert body["status"] in (
+        "sent",
+        "failed",
+        "created",
+        "acknowledged",
+        "in_progress",
+        "resolved",
+        "expired")
     assert "created_at" in body and "updated_at" in body
     assert body["location"]["zoneLabel"] == "North Sector"
 
@@ -50,6 +63,7 @@ def test_alerts_trigger_success_and_list(client):
     lst = list_resp.json()
     assert lst["total"] >= 1
     assert any(a["detection_id"] == "det_123" for a in lst["alerts"])
+
 
 def test_alerts_update_status(client):
     # Create alert
@@ -71,8 +85,15 @@ def test_alerts_update_status(client):
     alert_id = lst["alerts"][0]["id"]
 
     # Update status to ACKNOWLEDGED (DB enum)
-    upd = client.patch(f"/alerts/{alert_id}/status", params={"new_status": "ACKNOWLEDGED"})
+    upd = client.patch(
+        f"/alerts/{alert_id}/status",
+        params={
+            "new_status": "ACKNOWLEDGED"})
     assert upd.status_code == 200
     updated = upd.json()
     assert updated["id"] == alert_id
-    assert updated["status"] in ("ACKNOWLEDGED", "INACTIVE", "ACTIVE", "RESOLVED")
+    assert updated["status"] in (
+        "ACKNOWLEDGED",
+        "INACTIVE",
+        "ACTIVE",
+        "RESOLVED")

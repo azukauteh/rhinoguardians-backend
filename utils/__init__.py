@@ -6,6 +6,7 @@ from utils.notifications import NotificationService
 # Expose test image helpers for tests that import from `utils`
 from io import BytesIO
 
+
 def create_test_image(
     mode: str = "RGB",
     size: tuple | None = None,
@@ -30,6 +31,7 @@ def create_test_image(
     buf.seek(0)
     return buf
 
+
 def create_test_image_file(
     filename: str = "test.jpg",
     mode: str = "RGB",
@@ -39,7 +41,15 @@ def create_test_image_file(
     """
     Create a (filename, fileobj, mimetype) triple suitable for multipart uploads.
     """
-    buf = create_test_image(mode=mode, size=size, color=color, image_format="JPEG")
+    buf = create_test_image(
+        mode=mode,
+        size=size,
+        color=color,
+        image_format="JPEG")
     return (filename, buf, "image/jpeg")
 
-__all__ = ["NotificationService", "create_test_image", "create_test_image_file"]
+
+__all__ = [
+    "NotificationService",
+    "create_test_image",
+    "create_test_image_file"]

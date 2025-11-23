@@ -1,12 +1,14 @@
 import io
 from PIL import Image
 
+
 def _make_image_bytes():
     img = Image.new("RGB", (64, 64), color=(128, 128, 128))
     buf = io.BytesIO()
     img.save(buf, format="JPEG")
     buf.seek(0)
     return buf
+
 
 def test_upload_image_minimal(client):
     img_bytes = _make_image_bytes()

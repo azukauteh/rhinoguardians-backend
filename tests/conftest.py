@@ -1,11 +1,13 @@
 """Test configuration for pytest"""
+from fastapi import APIRouter
+from pydantic import BaseModel
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 import os
 import sys
 import types
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 # Ensure project root importable
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -21,14 +23,21 @@ from database.models import Base  # noqa: E402
 
 # Isolated in-memory DB for tests
 TEST_DATABASE_URL = "sqlite+pysqlite:///:memory:"
-engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_engine(
+    TEST_DATABASE_URL, connect_args={
+        "check_same_thread": False})
+TestingSessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine)
+
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_database():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
 
 @pytest.fixture()
 def test_db():
@@ -38,6 +47,7 @@ def test_db():
     finally:
         db.close()
 
+
 def override_get_db():
     db = TestingSessionLocal()
     try:
@@ -45,8 +55,10 @@ def override_get_db():
     finally:
         db.close()
 
+
 # Override app's DB dependency
 app.dependency_overrides[get_db] = override_get_db
+
 
 @pytest.fixture(autouse=True)
 def mock_notifications(monkeypatch):
@@ -60,7 +72,9 @@ def mock_notifications(monkeypatch):
         monkeypatch.setattr(
             alerts_module.notification_service,
             "send_alert",
-            types.MethodType(fake_send_alert, alerts_module.notification_service),
+            types.MethodType(
+                fake_send_alert,
+                alerts_module.notification_service),
             raising=True,
         )
     else:
@@ -73,6 +87,23 @@ def mock_notifications(monkeypatch):
         )
     yield
 
+
 @pytest.fixture()
 def client():
     return TestClient(app)
+
+
+router = APIRouter(prefix="/detections", tags=["detections"])
+
+
+class DetectionResponse(BaseModel):
+    id: int
+    species: str
+    confidence: float
+    image_path: str
+    lat: float
+    lng: float
+    timestamp: str
+
+    class Config:
+        orm_mode = True

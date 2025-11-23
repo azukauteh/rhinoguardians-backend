@@ -18,7 +18,5 @@ setup(
         "python-dotenv",
         "pillow",
         "psycopg2-binary",
-        "ultralytics"
-    ],
-    python_requires=">=3.10"
-)
+        "ultralytics"],
+    python_requires=">=3.10")
